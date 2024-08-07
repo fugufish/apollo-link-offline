@@ -63,9 +63,16 @@ export default class OfflineLink extends ApolloLink {
           // Mutation failed so we try again after a certain amount of time.
           this.delayedSync();
 
+          let optimisticResponse = context.optimisticResponse;
+          // if optimistic response is a function, call the function with the passed variables
+
+          if (typeof optimisticResponse === 'function') {
+            optimisticResponse = optimisticResponse(variables);
+          }
+
           // Resolve the mutation with the optimistic response so the UI can be updated
           observer.next({
-            data: context.optimisticResponse,
+            data: optimisticResponse,
             dataPresent: true,
             errors: []
           });
